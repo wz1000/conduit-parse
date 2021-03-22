@@ -48,10 +48,8 @@ instance Exception ConduitParserException
 named :: (Monad m, Show i) => String -> ConduitParser i m a -> ConduitParser i m a
 named = flip (<?>)
 
-await :: (Monad m) => ConduitParser i m i
-await = do
-  event <- ConduitParser $ lift Conduit.await
-  maybe (fail "Unexpected end of input") return event
+await :: (Monad m, Show i) => ConduitParser i m i
+await = ConduitParser $ tokenPrim show (\p _ _ -> incSourceLine p 1) Just
 
 peek :: (Monad m) => ConduitParser i m (Maybe i)
 peek = ConduitParser $ lift Conduit.peek
